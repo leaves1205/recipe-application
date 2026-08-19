@@ -2,9 +2,9 @@ import * as model from './model.js';
 import RecipeView from './views/recipeview.js';
 import SearchView from './views/searchView.js';
 import resultsView from './views/resultsView.js';
-import renderSpinner from './views/view.js';
-import paginationView from './views/paginationView.js';
 
+import paginationView from './views/paginationView.js';
+import BookmarksView from './views/bookmarksView.js';
 import 'core-js/stable'; // polyfilling everything else
 import 'regenerator-runtime/runtime'; // polyfilling async/await
 import { async } from 'regenerator-runtime';
@@ -20,7 +20,7 @@ const controlRecipes = async function () {
     RecipeView.renderSpinner();
 
     resultsView.update(model.getSearchResultsPage());
-
+    BookmarksView.update(model.state.bookmarks);
     await model.loadRecipe(id);
     RecipeView.render(model.state.recipe);
   } catch (err) {
@@ -52,9 +52,14 @@ const controlServings = function (newServings) {
   RecipeView.render(model.state.recipe);
 };
 const controlAddBookmark = function () {
+  //add/remmove bookmark
   if (!model.state.recipe.bookmarked) model.addBookmark(model.state.recipe);
   else model.deleteBookmark(model.state.recipe.id);
+  //update recipe view
   RecipeView.update(model.state.recipe);
+
+  //render bookmarks
+  BookmarksView.render(model.state.bookmarks);
 };
 const init = function () {
   RecipeView.addHandlerRender(controlRecipes);
