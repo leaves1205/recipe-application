@@ -1,6 +1,5 @@
 import { async } from 'regenerator-runtime';
-import { API_URL, TIMEOUT_SEC } from './config.js';
-import { getJSON } from './views/helpers.js';
+import { API_URL, TIMEOUT_SEC } from '../config.js';
 
 const timeout = function (s) {
   return new Promise(function (_, reject) {

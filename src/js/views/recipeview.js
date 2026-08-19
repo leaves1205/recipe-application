@@ -14,7 +14,7 @@ class RecipeView {
   }
   renderSpinner(parentEl) {
     const markup = `
-    <div class="spinner">
+      <div class="spinner">
           <svg>
             <use href="${icons}#icon-loader"></use>
           </svg>
@@ -23,6 +23,11 @@ class RecipeView {
     this.#parentElement.innerHTML = '';
     this.#parentElement.insertAdjacentHTML('afterbegin', markup);
   }
+
+  addHandlerRender(handler) {
+    ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, handler));
+  }
+
   #generateMarkup() {
     return `
     <figure class="recipe__fig">
@@ -79,17 +84,6 @@ class RecipeView {
             ${this.#data.ingredients
               .map(this.#generateMarkupIngredient)
               .join('')}
-              </div>
-            <li class="recipe__ingredient">
-              <svg class="recipe__icon">
-                <use href="${icons}#icon-check"></use>
-              </svg>
-              <div class="recipe__quantity">0.5</div>
-              <div class="recipe__description">
-                <span class="recipe__unit">cup</span>
-                ricotta cheese
-              </div>
-            </li>
           </ul>
         </div>
 
@@ -115,7 +109,6 @@ class RecipeView {
   }
   #generateMarkupIngredient(ing) {
     return `
-
                 <li class="recipe__ingredient">
                   <svg class="recipe__icon">
                     <use href="${icons}#icon-check"></use>

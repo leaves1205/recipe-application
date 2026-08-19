@@ -1,6 +1,5 @@
 import * as model from './model.js';
 import RecipeView from './views/recipeview.js';
-// Note: showRecipe is not actually exported from recipeview.js, so this import will not work correctly. You should use controlRecipes instead.
 import 'core-js/stable'; // polyfilling everything else
 import 'regenerator-runtime/runtime'; // polyfilling async/await
 
@@ -34,5 +33,7 @@ const controlRecipes = async function () {
     console.error(`${err} 💥💥💥`);
   }
 };
-window.addEventListener('hashchange', controlRecipes);
-window.addEventListener('load', controlRecipes);
+const init = function () {
+  RecipeView.addHandlerRender(controlRecipes);
+};
+init();

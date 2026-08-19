@@ -744,8 +744,10 @@ const controlRecipes = async function() {
         console.error(`${err} \u{1F4A5}\u{1F4A5}\u{1F4A5}`);
     }
 };
-window.addEventListener('hashchange', controlRecipes);
-window.addEventListener('load', controlRecipes);
+const init = function() {
+    (0, _recipeviewJsDefault.default).addHandlerRender(controlRecipes);
+};
+init();
 
 },{"core-js/modules/web.immediate.js":"bzsBv","regenerator-runtime/runtime":"f6ot0","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","./model.js":"3QBkH","./views/recipeview.js":"6kxfp"}],"bzsBv":[function(require,module,exports,__globalThis) {
 'use strict';
@@ -2659,6 +2661,8 @@ const TIMEOUT_SEC = 10;
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "getJSON", ()=>getJSON);
+var _regeneratorRuntime = require("regenerator-runtime");
+var _configJs = require("../config.js");
 const timeout = function(s) {
     return new Promise(function(_, reject) {
         setTimeout(function() {
@@ -2671,7 +2675,7 @@ const getJSON = async function(url) {
         const fetchPro = fetch(url);
         const res = await Promise.race([
             fetchPro,
-            timeout(10)
+            timeout((0, _configJs.TIMEOUT_SEC))
         ]);
         const data = await res.json();
         if (!res.ok) throw new Error(`${data.message} (${res.status})`);
@@ -2681,7 +2685,7 @@ const getJSON = async function(url) {
     }
 };
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"6kxfp":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","regenerator-runtime":"f6ot0","../config.js":"2hPh4"}],"6kxfp":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _iconsSvg = require("url:../../img/icons.svg"); // Parcel 2
@@ -2701,7 +2705,7 @@ class RecipeView {
     }
     renderSpinner(parentEl) {
         const markup = `
-    <div class="spinner">
+      <div class="spinner">
           <svg>
             <use href="${(0, _iconsSvgDefault.default)}#icon-loader"></use>
           </svg>
@@ -2709,6 +2713,12 @@ class RecipeView {
     `;
         this.#parentElement.innerHTML = '';
         this.#parentElement.insertAdjacentHTML('afterbegin', markup);
+    }
+    addHandlerRender(handler) {
+        [
+            'hashchange',
+            'load'
+        ].forEach((ev)=>window.addEventListener(ev, handler));
     }
     #generateMarkup() {
         return `
@@ -2764,17 +2774,6 @@ class RecipeView {
           <h2 class="heading--2">Recipe ingredients</h2>
           <ul class="recipe__ingredient-list">
             ${this.#data.ingredients.map(this.#generateMarkupIngredient).join('')}
-              </div>
-            <li class="recipe__ingredient">
-              <svg class="recipe__icon">
-                <use href="${0, _iconsSvgDefault.default}#icon-check"></use>
-              </svg>
-              <div class="recipe__quantity">0.5</div>
-              <div class="recipe__description">
-                <span class="recipe__unit">cup</span>
-                ricotta cheese
-              </div>
-            </li>
           </ul>
         </div>
 
@@ -2800,7 +2799,6 @@ class RecipeView {
     }
     #generateMarkupIngredient(ing) {
         return `
-
                 <li class="recipe__ingredient">
                   <svg class="recipe__icon">
                     <use href="${0, _iconsSvgDefault.default}#icon-check"></use>
@@ -2884,7 +2882,7 @@ THE SOFTWARE.
  *      new Fraction('1/2') --> 1/2
  *      new Fraction('2 3/4') --> 11/4  (prints as 2 3/4)
  *
- */ Fraction = function(numerator, denominator) {
+ */ var Fraction = function(numerator, denominator) {
     /* double argument invocation */ if (typeof numerator !== 'undefined' && denominator) {
         if (typeof numerator === 'number' && typeof denominator === 'number') {
             this.numerator = numerator;
