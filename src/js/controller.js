@@ -1,10 +1,12 @@
 import * as model from './model.js';
+import { MODAL_CLOSE_SEC } from './config.js';
 import RecipeView from './views/recipeview.js';
 import SearchView from './views/searchView.js';
 import resultsView from './views/resultsView.js';
 
 import paginationView from './views/paginationView.js';
 import BookmarksView from './views/bookmarksView.js';
+import addRecipeView from './views/addRecipeView.js';
 import 'core-js/stable'; // polyfilling everything else
 import 'regenerator-runtime/runtime'; // polyfilling async/await
 import { async } from 'regenerator-runtime';
@@ -44,7 +46,7 @@ const controlSearchResults = async function () {
 
 const controlPagination = function (goToPage) {
   resultsView.render(model.getSearchResultsPage(goToPage));
-  paginationView.update(model.state.search);
+  paginationView.render(model.state.search);
 };
 
 const controlServings = function (newServings) {
@@ -65,6 +67,25 @@ const controlAddBookmark = function () {
 const controlBookmarks = function () {
   BookmarksView.render(model.state.bookmarks);
 };
+const controlAddRecipe = async function (newRecipe) {
+  //upload new recipe data
+  try {
+    addRecipeView.renderSpinner();
+    await model.uploadRecipe(newRecipe);
+    RecipeView.render(model.state.recipe);
+    addRecipeView.renderMessage();
+    BookmarksView.render(model.state.bookmarks);
+
+    //change ID in URL
+    window.history.pushState(null, '', `#${model.state.recipe.id}`);
+    setTimeout(function () {
+      addRecipeView.toggleWindow();
+    }, MODAL_CLOSE_SEC * 1000);
+  } catch (err) {
+    console.error('💥', err);
+    addRecipeView.renderError(err.message);
+  }
+};
 const init = function () {
   BookmarksView.addHandlerRender(controlBookmarks);
   RecipeView.addHandlerRender(controlRecipes);
@@ -72,5 +93,6 @@ const init = function () {
   SearchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
   RecipeView.addHandlerUpdateServings(controlServings);
+  addRecipeView.addHandlerUpload(controlAddRecipe);
 };
 init();
