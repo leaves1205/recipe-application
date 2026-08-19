@@ -1,23 +1,10 @@
 import * as model from './model.js';
 import RecipeView from './views/recipeview.js';
+import SearchView from './views/searchView.js';
+
 import 'core-js/stable'; // polyfilling everything else
 import 'regenerator-runtime/runtime'; // polyfilling async/await
-
-const recipeContainer = document.querySelector('.recipe');
-
-const timeout = function (s) {
-  return new Promise(function (_, reject) {
-    setTimeout(function () {
-      reject(new Error(`Request took too long! Timeout after ${s} second`));
-    }, s * 1000);
-  });
-};
-
-// NEW API URL (instead of the one shown in the video)
-// https://forkify-api.jonas.io
-
-///////////////////////////////////////
-console.log('test');
+import { async } from 'regenerator-runtime';
 
 const controlRecipes = async function () {
   try {
@@ -33,7 +20,20 @@ const controlRecipes = async function () {
     RecipeView.renderError();
   }
 };
+
+const controlSearchResults = async function () {
+  try {
+    const query = SearchView.getQuery();
+    if (!query) return;
+
+    await model.loadSearchResults(query);
+    console.log(model.state.search.results);
+  } catch (err) {
+    console.log(err);
+  }
+};
 const init = function () {
   RecipeView.addHandlerRender(controlRecipes);
+  SearchView.addHandlerSearch(controlSearchResults);
 };
 init();
