@@ -3,6 +3,7 @@ import RecipeView from './views/recipeview.js';
 import SearchView from './views/searchView.js';
 import resultsView from './views/resultsView.js';
 import renderSpinner from './views/view.js';
+import paginationView from './views/paginationView.js';
 
 import 'core-js/stable'; // polyfilling everything else
 import 'regenerator-runtime/runtime'; // polyfilling async/await
@@ -20,7 +21,6 @@ const controlRecipes = async function () {
 
     await model.loadRecipe(id);
     RecipeView.render(model.state.recipe);
-    //rendering recipe
   } catch (err) {
     RecipeView.renderError();
   }
@@ -34,12 +34,20 @@ const controlSearchResults = async function () {
 
     await model.loadSearchResults(query);
     resultsView.render(model.getSearchResultsPage());
+    paginationView.render(model.state.search);
   } catch (err) {
     console.log(err);
   }
 };
+
+const controlPagination = function (goToPage) {
+  resultsView.render(model.getSearchResultsPage(goToPage));
+  paginationView.render(model.state.search);
+};
+
 const init = function () {
   RecipeView.addHandlerRender(controlRecipes);
   SearchView.addHandlerSearch(controlSearchResults);
+  paginationView.addHandlerClick(controlPagination);
 };
 init();
