@@ -207,11 +207,11 @@
       });
     }
   }
-})({"5DuvQ":[function(require,module,exports,__globalThis) {
+})({"7xxOp":[function(require,module,exports,__globalThis) {
 var global = arguments[3];
 var HMR_HOST = null;
 var HMR_PORT = null;
-var HMR_SERVER_PORT = 1234;
+var HMR_SERVER_PORT = 59828;
 var HMR_SECURE = false;
 var HMR_ENV_HASH = "439701173a9199ea";
 var HMR_USE_SSE = false;
@@ -757,14 +757,19 @@ const controlPagination = function(goToPage) {
     (0, _resultsViewJsDefault.default).render(_modelJs.getSearchResultsPage(goToPage));
     (0, _paginationViewJsDefault.default).render(_modelJs.state.search);
 };
+const controlServings = function(newServings) {
+    _modelJs.updateServings(newServings);
+    (0, _recipeviewJsDefault.default).render(_modelJs.state.recipe);
+};
 const init = function() {
     (0, _recipeviewJsDefault.default).addHandlerRender(controlRecipes);
     (0, _searchViewJsDefault.default).addHandlerSearch(controlSearchResults);
     (0, _paginationViewJsDefault.default).addHandlerClick(controlPagination);
+    (0, _recipeviewJsDefault.default).addHandlerUpdateServings(controlServings);
 };
 init();
 
-},{"core-js/modules/web.immediate.js":"bzsBv","./model.js":"3QBkH","./views/recipeview.js":"6kxfp","./views/searchView.js":"kbE4Z","./views/resultsView.js":"kBQ4r","./views/view.js":"2kjY2","regenerator-runtime/runtime":"f6ot0","regenerator-runtime":"f6ot0","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","./views/paginationView.js":"7NIiB"}],"bzsBv":[function(require,module,exports,__globalThis) {
+},{"core-js/modules/web.immediate.js":"bzsBv","./model.js":"3QBkH","./views/recipeview.js":"6kxfp","./views/searchView.js":"kbE4Z","./views/resultsView.js":"kBQ4r","./views/view.js":"2kjY2","./views/paginationView.js":"7NIiB","regenerator-runtime/runtime":"f6ot0","regenerator-runtime":"f6ot0","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"bzsBv":[function(require,module,exports,__globalThis) {
 'use strict';
 // TODO: Remove this module from `core-js@4` since it's split to modules listed below
 require("52e9b3eefbbce1ed");
@@ -2025,6 +2030,7 @@ parcelHelpers.export(exports, "state", ()=>state);
 parcelHelpers.export(exports, "loadRecipe", ()=>loadRecipe);
 parcelHelpers.export(exports, "loadSearchResults", ()=>loadSearchResults);
 parcelHelpers.export(exports, "getSearchResultsPage", ()=>getSearchResultsPage);
+parcelHelpers.export(exports, "updateServings", ()=>updateServings);
 var _regeneratorRuntime = require("regenerator-runtime");
 var _configJs = require("./config.js");
 var _helpersJs = require("./views/helpers.js");
@@ -2080,6 +2086,12 @@ const getSearchResultsPage = function(page = state.search.page) {
     const start = (page - 1) * resultsPerPage;
     const end = page * resultsPerPage;
     return state.search.results.slice(start, end);
+};
+const updateServings = function(newServings) {
+    state.recipe.ingredients.forEach((ing)=>{
+        ing.quantity = ing.quantity * newServings / state.recipe.servings;
+    });
+    state.recipe.servings = newServings;
 };
 
 },{"regenerator-runtime":"f6ot0","./config.js":"2hPh4","./views/helpers.js":"95SUU","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"f6ot0":[function(require,module,exports,__globalThis) {
@@ -2754,6 +2766,14 @@ class RecipeView extends (0, _viewJsDefault.default) {
             'load'
         ].forEach((ev)=>window.addEventListener(ev, handler));
     }
+    addHandlerUpdateServings(handler) {
+        this._parentElement.addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn--tiny');
+            if (!btn) return;
+            const { updateTo } = btn.dataset;
+            if (+updateTo > 0) handler(+updateTo);
+        });
+    }
     _generateMarkup() {
         return `
     <figure class="recipe__fig">
@@ -2766,27 +2786,27 @@ class RecipeView extends (0, _viewJsDefault.default) {
         <div class="recipe__details">
           <div class="recipe__info">
             <svg class="recipe__info-icon">
-              <use href="${0, _iconsSvgDefault.default}_icon-clock"></use>
+              <use href="${0, _iconsSvgDefault.default}#icon-clock"></use>
             </svg>
             <span class="recipe__info-data recipe__info-data--minutes">${this._data.cookingTime}</span>
             <span class="recipe__info-text">minutes</span>
           </div>
           <div class="recipe__info">
             <svg class="recipe__info-icon">
-              <use href="${0, _iconsSvgDefault.default}_icon-users"></use>
+              <use href="${0, _iconsSvgDefault.default}#icon-users"></use>
             </svg>
             <span class="recipe__info-data recipe__info-data--people">${this._data.servings}</span>
             <span class="recipe__info-text">servings</span>
 
             <div class="recipe__info-buttons">
-              <button class="btn--tiny btn--increase-servings">
+              <button class="btn--tiny btn--increase-servings" data-update-to="${this._data.servings - 1}">
                 <svg>
-                  <use href="${0, _iconsSvgDefault.default}_icon-minus-circle"></use>
+                  <use href="${0, _iconsSvgDefault.default}#icon-minus-circle"></use>
                 </svg>
               </button>
-              <button class="btn--tiny btn--increase-servings">
+              <button class="btn--tiny btn--increase-servings" data-update-to="${this._data.servings + 1}">
                 <svg>
-                  <use href="${0, _iconsSvgDefault.default}_icon-plus-circle"></use>
+                  <use href="${0, _iconsSvgDefault.default}#icon-plus-circle"></use>
                 </svg>
               </button>
             </div>
@@ -2845,7 +2865,7 @@ class RecipeView extends (0, _viewJsDefault.default) {
 }
 exports.default = new RecipeView();
 
-},{"./View.js":"jSw21","url:../../img/icons.svg":"fd0vu","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","fraction.js":"md6n5"}],"jSw21":[function(require,module,exports,__globalThis) {
+},{"./View.js":"jSw21","url:../../img/icons.svg":"fd0vu","fraction.js":"md6n5","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"jSw21":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _iconsSvg = require("url:../../img/icons.svg"); // Parcel 2
@@ -3467,6 +3487,6 @@ class PaginationView extends (0, _viewJsDefault.default) {
 }
 exports.default = new PaginationView();
 
-},{"url:../../img/icons.svg":"fd0vu","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","./view.js":"2kjY2"}]},["5DuvQ","7dWZ8"], "7dWZ8", "parcelRequire3a11", {}, "./", "/")
+},{"./view.js":"2kjY2","url:../../img/icons.svg":"fd0vu","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}]},["7xxOp","7dWZ8"], "7dWZ8", "parcelRequire3a11", {}, "./", "/")
 
 //# sourceMappingURL=starter.4a59a05f.js.map
